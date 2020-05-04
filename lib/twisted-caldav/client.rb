@@ -13,9 +13,9 @@ module TwistedCaldav
 
     def initialize(data)
       unless data[:proxy_uri].nil?
-        proxy_uri = URI(data[:proxy_uri])
-        @proxy_host = proxy_uri.host
-        @proxy_port = proxy_uri.port.to_i
+        @proxy_uri = URI(data[:proxy_uri])
+        @proxy_host = @proxy_uri.host
+        @proxy_port = @proxy_uri.port.to_i
       end
 
       uri = URI(data[:uri])
@@ -107,7 +107,7 @@ module TwistedCaldav
         end
         res = http.request(req)
       }
-      errorhandling res
+
       begin
         r = Icalendar.parse(res.body)
       rescue
@@ -140,7 +140,7 @@ module TwistedCaldav
     def create_event(event)
       c = Calendar.new
       c.events = []
-      uuid = event[:uuid] || UUID.new.generate
+      uuid = event[:uid] || UUID.new.generate
       raise DuplicateError if entry_with_uuid_exists?(uuid)
       c.event do
         uid uuid
